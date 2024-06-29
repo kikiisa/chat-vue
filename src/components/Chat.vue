@@ -35,7 +35,9 @@ import { data } from 'autoprefixer';
     }
     
   onMounted(() => {
-    getTodos()
+    setInterval(() => {
+      getTodos()
+    },1000)
   });
 </script>
 <template>
