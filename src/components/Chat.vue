@@ -3,7 +3,7 @@
   import { ref,onMounted, reactive } from 'vue';
   import supabase from '../connection';
   import timeAgo from '../utils/time';
-import { data } from 'autoprefixer';
+
   const datas = ref([])
   const chats = reactive({
     message: ''
