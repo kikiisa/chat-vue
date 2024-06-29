@@ -1,9 +1,13 @@
 
 <script setup>
-  import { ref,onMounted } from 'vue';
+  import { ref,onMounted, reactive } from 'vue';
   import supabase from '../connection';
   import timeAgo from '../utils/time';
+import { data } from 'autoprefixer';
   const datas = ref([])
+  const chats = reactive({
+    message: ''
+  })
   async function getTodos() {
     try
     {
@@ -17,31 +21,42 @@
   }
   async function sendChat()
   {
-    console.log("ok");
-  }
+    console.log(chats.message);
+    const { data,error } = await supabase
+      .from('chat')
+      .insert({ content:chats.message })
+      if (error) {
+        console.error(error)
+      } else {
+        chats.message = ""
+        getTodos()
+        console.log(data)
+      }
+    }
+    
   onMounted(() => {
     getTodos()
   });
 </script>
 <template>
   <div
-    class="container mt-20 w-full sm:px-3 sm:w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto"
+    class="container mt-20 w-full  sm:w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto"
   >
     <h1>Chat Hari Ini</h1>
-    <hr />
+    <hr/>
 
     <!-- list chat -->
-    <div class="flex items-start gap-2.5 mt-4">
+    <div class="flex items-start gap-2.5 mt-4" v-for="item in datas" :key="item.id">
       <img
         class="w-8 h-8 rounded-full"
         src="https://flowbite.com/docs/images/logo.svg"
         alt="Jese image"
       />
       
-      <div v-for="item in datas" :key="item.id" class=" flex flex-col gap-1 w-full max-w-[320px]">
+      <div  class=" flex flex-col gap-1 w-full max-w-[320px]">
         <div class="flex items-center space-x-2 rtl:space-x-reverse">
           <span class="text-sm font-semibold text-gray-900 dark:text-white"
-            >Mohamad Rizky Isa</span
+            >Anonim</span
           >
           <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
             >{{ timeAgo(item.created_at) }}</span
@@ -131,6 +146,7 @@
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-l-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Masukan Pesan Anda"
           required
+          v-model="chats.message"
         />
         <button
           type="submit"
